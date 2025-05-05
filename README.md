@@ -74,8 +74,7 @@ go get github.com/dinhcanh303/go_translate
 ```
 ## Note
 - Using the free Microsoft Translate API does not support automatic language detection, the default is en (English), if you want to automatically detect the language you can use a model that can detect the language. I am using the fasttext and opencc model to detect the language
-- Server example: 
-  -- https://github.com/dinhcanh303/language_detection
+- Server example: https://github.com/dinhcanh303/language_detection
 - You can refer to the example folder for more information
 
 ```go
