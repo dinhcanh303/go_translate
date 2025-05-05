@@ -1,0 +1,18 @@
+syntax = "proto3";
+package language_detection;
+
+// The DetectLanguageService definition.
+service LanguageDetectionService {
+  rpc DetectLanguage (DetectLanguageRequest) returns (DetectLanguageResponse);
+}
+
+// Request message for text detect.
+message DetectLanguageRequest {
+  string text = 1; // The input text to detected language.
+}
+
+// Response message for text translation.
+message DetectLanguageResponse {
+  string detected_lang = 1; // The detected language.
+  string error = 2;
+}
