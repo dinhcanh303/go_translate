@@ -5,6 +5,14 @@ type Translator interface {
 }
 
 func NewTranslator(opts *TranslateOptions) Translator {
+	if opts == nil {
+		opts = &TranslateOptions{
+			Provider:          ProviderGoogle,
+			AddToken:          false,
+			RandomUserAgents:  false,
+			RandomServiceUrls: false,
+		}
+	}
 	switch opts.Provider {
 	case ProviderGoogle:
 		return NewGoogleTranslateService(opts)
