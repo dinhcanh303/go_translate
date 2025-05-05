@@ -114,7 +114,7 @@ func (s *GoogleTranslateService) doRequest(method, endpoint string, headers map[
 		if err != nil {
 			return nil, err
 		}
-		u.RawQuery = params.Encode()
+		u.RawQuery = u.Query().Encode() + "&" + params.Encode()
 		reqURL = u.String()
 	}
 
