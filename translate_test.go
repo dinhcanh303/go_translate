@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewTranslator_Google(t *testing.T) {
-	opts := &TranslateOptions{Provider: "google", AddToken: true, RandomUserAgents: true, RandomServiceUrls: true}
+	opts := &TranslateOptions{Provider: "google"}
 	translator := NewTranslator(opts)
 	require.NotNil(t, translator)
 	result, err := translator.TranslateText("Thank you for using our package.", "vi")

@@ -7,10 +7,7 @@ type Translator interface {
 func NewTranslator(opts *TranslateOptions) Translator {
 	if opts == nil {
 		opts = &TranslateOptions{
-			Provider:          ProviderGoogle,
-			AddToken:          false,
-			RandomUserAgents:  false,
-			RandomServiceUrls: false,
+			Provider: ProviderGoogle,
 		}
 	}
 	switch opts.Provider {
