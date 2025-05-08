@@ -13,7 +13,7 @@
 ## 📦 Installation
 
 ```bash
-go get github.com/dinhcanh303/go_translate
+go get github.com/dinhcanh303/go_translate@latest
 ```
 
 ## 🧑‍💻 Usage
@@ -65,12 +65,21 @@ go get github.com/dinhcanh303/go_translate
 
 ```go
   type TranslateOptions struct {
-    Provider          Provider // "google" or "microsoft"
-    AddToken          bool     // For Google Translate token generation
-    RandomUserAgents  bool     // Randomize user-agent header
-    RandomServiceUrls bool     // Shuffle between service URLs
-    ServiceUrls       []string // Custom backend servers (Google only)
+    Provider             Provider // "google" or "microsoft"
+    GoogleAPIType        GoogleAPIType // "html" || "ga-gtx" || "client-gtx" || "client-dict"
+    UseRandomUserAgents  bool // Randomize user-agent header
+    UseRandomServiceUrls bool // Randomize service URLs
+    AddToken             bool //For Google Translate token generation by text translate
+    CustomServiceUrls    []string //Custom backend servers (Google only)
+    CustomUserAgents     []string //Custom user-agent header (Google only)
   }
+  const (
+    TypeHtml               GoogleAPIType = "html" //google return html
+    TypePaGtx              GoogleAPIType = "pa-gtx" // translate-pa using client gtx have key
+    TypeClientGtx          GoogleAPIType = "client-gtx"
+    TypeClientDictChromeEx GoogleAPIType = "client-dict"
+  )
+
 ```
 ## Note
 - Using the free Microsoft Translate API does not support automatic language detection, the default is en (English), if you want to automatically detect the language you can use a model that can detect the language. I am using the fasttext and opencc model to detect the language
