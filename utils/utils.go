@@ -8,19 +8,34 @@ import (
 	"strings"
 )
 
-// ExtractTranslatedText extracts the translated text from a given response body in JSON format.
+// ExtractTranslatedTextFromHtml extracts the translated text from a given response body in JSON format.
 // The response body is expected to be a nested JSON array where the first element contains the translated text.
 // Returns the translated text or an error if the format is unexpected.
-func ExtractTranslatedText(respBody []byte) (string, error) {
+func ExtractTranslatedTextFromHtml(respBody []byte) ([]string, error) {
 	var data [][]string
 	err := json.Unmarshal(respBody, &data)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if len(data) > 0 && len(data[0]) > 0 {
-		return data[0][0], nil
+		return data[0], nil
 	}
-	return "", errors.New("unexpected response format")
+	return nil, errors.New("unexpected response format")
+}
+
+// ExtractTranslatedText extracts the translated text from a given response body in JSON format.
+// The response body is expected to be a nested JSON array where the first element contains the translated text.
+// Returns the translated text or an error if the format is unexpected.
+func ExtractTranslatedText(respBody []byte) ([]string, error) {
+	var data [][]string
+	err := json.Unmarshal(respBody, &data)
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > 0 && len(data[0]) > 0 {
+		return SplitWithSeparator(data[0][0]), nil
+	}
+	return nil, errors.New("unexpected response format")
 }
 
 // DecodeUnicode decodes Unicode escape sequences in a string.
@@ -39,29 +54,29 @@ func DecodeUnicode(text string) (string, error) {
 // ExtractTranslatedTextFromJson extracts the translated text from a JSON response with a "translation" field.
 // The response is expected to contain a "translation" field with the translated text.
 // Returns the translated text or an error if unmarshalling fails.
-func ExtractTranslatedTextFromJson(respBody []byte) (string, error) {
+func ExtractTranslatedTextFromJson(respBody []byte) ([]string, error) {
 	var result struct {
 		Translation string `json:"translation"`
 	}
 	err := json.Unmarshal(respBody, &result)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return result.Translation, nil
+	return SplitWithSeparator(result.Translation), nil
 }
 
 // ExtractTranslatedTextFromArray extracts the translated text from a JSON array where each element is a sentence.
 // The function expects the first layer of the JSON array to be a list of sentences.
 // It concatenates and returns the translated sentences as a single string.
-func ExtractTranslatedTextFromArray(data []byte) (string, error) {
+func ExtractTranslatedTextFromArray(data []byte) ([]string, error) {
 	var rawData []interface{}
 	if err := json.Unmarshal(data, &rawData); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	sentences, ok := rawData[0].([]interface{})
 	if !ok {
-		return "", errors.New("unexpected format: cannot extract first layer")
+		return nil, errors.New("unexpected format: cannot extract first layer")
 	}
 
 	var builder strings.Builder
@@ -77,7 +92,7 @@ func ExtractTranslatedTextFromArray(data []byte) (string, error) {
 		}
 	}
 
-	return builder.String(), nil
+	return SplitWithSeparator(builder.String()), nil
 }
 
 // GetRandomValue returns a random value from a slice of type T.
@@ -96,4 +111,22 @@ func GetConditionalRandomValue[T any](defaultData, data []T, condition bool) T {
 		return GetRandomValue(defaultData)
 	}
 	return defaultData[0]
+}
+
+// JoinWithSeparator joins elements of a slice with a separator.
+func JoinWithSeparator(input []string, separator ...string) string {
+	return strings.Join(input, getSeparator(separator))
+}
+
+// SplitWithSeparator splits a string into a slice using a separator.
+func SplitWithSeparator(input string, separator ...string) []string {
+	return strings.Split(input, getSeparator(separator))
+}
+
+// getSeparator returns the first separator if provided or default to "\n".
+func getSeparator(separator []string) string {
+	if len(separator) > 0 && separator[0] != "" {
+		return separator[0]
+	}
+	return "\n"
 }

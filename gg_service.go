@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/dinhcanh303/go_translate/utils"
@@ -30,34 +31,43 @@ func NewGoogleTranslateService(opts *TranslateOptions) *GoogleTranslateService {
 	}
 }
 
-// TranslateText translates the provided text into the target language using the configured provider and API type.
 // It tries multiple endpoints based on the API type (HTML, PaGtx, ClientGtx, etc.) and returns the translated text.
 // It returns an error if all translation attempts fail.
-func (s *GoogleTranslateService) TranslateText(text, target string, detectedLangCode ...string) (string, error) {
-	// Try each API endpoint
-	for t, endpoint := range GoogleUrls {
-		var translated string
-		var err error
-		switch t {
-		case TypeHtml:
-			translated, err = s.callTranslateHTML(text, target, endpoint)
-		case TypeClientGtx, TypeClientDictChromeEx:
-			translated, err = s.callTranslateGet(text, target, endpoint, t == TypeClientGtx)
-		case TypePaGtx:
-			translated, err = s.callTranslatePa(text, target, endpoint)
-		}
-		// If translation is successful, return the result
-		if err == nil && translated != "" {
-			return translated, nil
-		}
-		log.Printf("[ERROR] API %s failed: %v", t, err)
+func (s *GoogleTranslateService) translate(texts []string, target string) ([]string, error) {
+	var translatedText []string
+	var err error
+	googleApiType := s.opts.GoogleAPIType
+	if s.opts.GoogleAPIType == TypeRandom {
+		googleApiType = utils.GetRandomValue([]GoogleAPIType{TypeHtml, TypeClientGtx, TypeClientDictChromeEx, TypePaGtx})
 	}
-	return "", errors.New("unable to translate text, all APIs failed")
+	endpoint := GoogleUrls[googleApiType]
+	// Try each API endpoint
+	switch googleApiType {
+	case TypeHtml:
+		translatedText, err = s.callTranslateHTML(texts, target, endpoint)
+	case TypeClientGtx, TypeClientDictChromeEx:
+		translatedText, err = s.callTranslateGet(texts, target, endpoint, googleApiType == TypeClientGtx)
+	case TypePaGtx:
+		translatedText, err = s.callTranslatePa(texts, target, endpoint)
+	}
+	// If translation is successful, return the result
+	if err == nil && translatedText != nil {
+		log.Printf("API:: %s completed", googleApiType)
+		return translatedText, nil
+	}
+	log.Printf("[ERROR] API %s failed: %v", googleApiType, err)
+	return nil, errors.New("unable to translate text, all APIs failed")
+}
+
+// TranslateBatchText translates the provided text into the target language using the configured provider and API type.
+// It returns an error if all translation attempts fail.
+func (s *GoogleTranslateService) TranslateText(texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	return s.translate(texts, target)
 }
 
 // callTranslateHTML makes a POST request to the HTML API endpoint and returns the translated text.
-func (s *GoogleTranslateService) callTranslateHTML(text, target, endpoint string) (string, error) {
-	body := fmt.Sprintf(`[[["%s"],"auto","%s"],"wt_lib"]`, text, target)
+func (s *GoogleTranslateService) callTranslateHTML(texts []string, target, endpoint string) ([]string, error) {
+	body := buildGoogleHTMLBody(texts, target)
 	headers := map[string]string{
 		"User-Agent":     utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 		"Content-Type":   "application/json+protobuf",
@@ -65,13 +75,14 @@ func (s *GoogleTranslateService) callTranslateHTML(text, target, endpoint string
 	}
 	respBytes, err := s.doRequest("POST", endpoint, headers, nil, []byte(body))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return utils.ExtractTranslatedText(respBytes)
+	return utils.ExtractTranslatedTextFromHtml(respBytes)
 }
 
 // callTranslateGet makes a GET request to the Google Translate API (client-gtx or client-dict) and returns the translated text.
-func (s *GoogleTranslateService) callTranslateGet(text, target, endpoint string, isGtx bool) (string, error) {
+func (s *GoogleTranslateService) callTranslateGet(texts []string, target, endpoint string, isGtx bool) ([]string, error) {
+	text := utils.JoinWithSeparator(texts)
 	fullURL := "https://" + utils.GetConditionalRandomValue(DefaultServiceUrls, s.opts.CustomServiceUrls, s.opts.UseRandomServiceUrls) + endpoint
 	params := url.Values{
 		"tl": {target},
@@ -85,7 +96,7 @@ func (s *GoogleTranslateService) callTranslateGet(text, target, endpoint string,
 	}
 	respBytes, err := s.doRequest("GET", fullURL, headers, params, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if isGtx {
 		return utils.ExtractTranslatedTextFromArray(respBytes)
@@ -94,18 +105,18 @@ func (s *GoogleTranslateService) callTranslateGet(text, target, endpoint string,
 }
 
 // callTranslatePa makes a GET request to the PaGtx API endpoint and returns the translated text.
-func (s *GoogleTranslateService) callTranslatePa(text, target, endpoint string) (string, error) {
+func (s *GoogleTranslateService) callTranslatePa(texts []string, target, endpoint string) ([]string, error) {
 	params := url.Values{
 		"query.target_language": {target},
 		"key":                   {GOOGLE_API_KEY_TRANSLATE_PA},
-		"query.text":            {text},
+		"query.text":            {utils.JoinWithSeparator(texts)},
 	}
 	headers := map[string]string{
 		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 	}
 	respBytes, err := s.doRequest("GET", endpoint, headers, params, nil)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return utils.ExtractTranslatedTextFromJson(respBytes)
 }
@@ -143,4 +154,13 @@ func (s *GoogleTranslateService) doRequest(method, endpoint string, headers map[
 		return nil, fmt.Errorf("status code: %d", resp.StatusCode)
 	}
 	return io.ReadAll(resp.Body)
+}
+func buildGoogleHTMLBody(texts []string, target string) string {
+	var quoted string
+	if len(texts) == 1 {
+		quoted = `"` + texts[0] + `"`
+	} else {
+		quoted = `"` + strings.Join(texts, `","`) + `"`
+	}
+	return fmt.Sprintf(`[[[%s],"auto","%s"],"wt_lib"]`, quoted, target)
 }

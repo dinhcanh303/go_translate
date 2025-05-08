@@ -1,25 +1,55 @@
 package go_translate
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewTranslator_Google(t *testing.T) {
-	opts := &TranslateOptions{Provider: "google"}
-	translator := NewTranslator(opts)
-	require.NotNil(t, translator)
-	result, err := translator.TranslateText("Thank you for using our package.", "vi")
-	require.Nil(t, err)
-	require.Equal(t, result, "Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi.")
-}
+func TestTranslateBatchText(t *testing.T) {
+	type TranslateTestCase struct {
+		opts           *TranslateOptions
+		input          []string
+		targetLang     string
+		detectedLang   string
+		expectedOutput []string
+	}
+	tcs := map[string]TranslateTestCase{
+		"google case 1": {
+			opts:           &TranslateOptions{Provider: "google"},
+			input:          []string{"Thank you for using our package.", "한국어", "I'm fine", "我认为我们需要拭目以待。美联储加息可能会让市场更加动荡😑😑😑😑"},
+			detectedLang:   "auto",
+			targetLang:     "vi",
+			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi.", "Hàn Quốc", "Tôi ổn", "Tôi nghĩ chúng ta cần phải chờ xem. Việc Fed tăng lãi suất có thể khiến thị trường biến động hơn 😑😑😑😑"},
+		},
+		"google case 2": {
+			opts:           &TranslateOptions{Provider: "google"},
+			input:          []string{"Thank you for using our package."},
+			detectedLang:   "auto",
+			targetLang:     "vi",
+			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi."},
+		},
+		"microsoft case 1": {
+			opts:           &TranslateOptions{Provider: "microsoft"},
+			input:          []string{"Thank you for using our package."},
+			detectedLang:   "en",
+			targetLang:     "vi",
+			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
+		},
+	}
 
-func TestNewTranslator_Microsoft(t *testing.T) {
-	opts := &TranslateOptions{Provider: "microsoft"}
-	translator := NewTranslator(opts)
-	require.NotNil(t, translator)
-	result, err := translator.TranslateText("Thank you for using our package.", "vi")
-	require.Nil(t, err)
-	require.Equal(t, result, "Cảm ơn bạn đã sử dụng gói của chúng tôi.")
+	for scenario, tc := range tcs {
+		tc := tc
+		t.Run(scenario, func(t *testing.T) {
+			translator, err := NewTranslator(tc.opts)
+			require.Nil(t, err)
+			require.NotNil(t, translator)
+
+			fmt.Println(tc.input)
+			result, err := translator.TranslateText(tc.input, tc.targetLang)
+			require.Nil(t, err)
+			require.Equal(t, tc.expectedOutput, result)
+		})
+	}
 }

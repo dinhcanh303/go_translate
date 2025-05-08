@@ -26,33 +26,40 @@ func NewMicrosoftTranslateService(opts *TranslateOptions) *MicrosoftTranslateSer
 
 // TranslateText performs the translation of the provided text into the target language using the Microsoft translation API.
 // It also optionally accepts a detected language code if you want to specify the source language explicitly.
-func (m *MicrosoftTranslateService) TranslateText(text, target string, detectedLangCode ...string) (string, error) {
+func (m *MicrosoftTranslateService) TranslateText(texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	return m.translate(texts, target, detectedLangCode...)
+}
+
+// TranslateText performs the translation of the provided text into the target language using the Microsoft translation API.
+// It also optionally accepts a detected language code if you want to specify the source language explicitly.
+func (m *MicrosoftTranslateService) translate(texts []string, target string, detectedLangCode ...string) ([]string, error) {
 	dir := "en/" + target
 	if len(detectedLangCode) > 0 {
 		dir = detectedLangCode[0] + "/" + target
 	}
+
 	formData := url.Values{
-		"text":     {text},
+		"text":     {utils.JoinWithSeparator(texts)},
 		"dir":      {dir},
 		"provider": {"microsoft"},
 	}
 	req, err := http.NewRequest("POST", MicrosoftServerUrl, bytes.NewBufferString(formData.Encode()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := m.client.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	text, err = utils.DecodeUnicode(string(bodyBytes))
+	text, err := utils.DecodeUnicode(string(bodyBytes))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return text, nil
+	return utils.SplitWithSeparator(text), nil
 }
