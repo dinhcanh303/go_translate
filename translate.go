@@ -2,7 +2,11 @@
 // such as Google Translate and Microsoft Translator.
 package go_translate
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+	"time"
+)
 
 // Translator is a generic interface for text translation services.
 //
@@ -23,12 +27,18 @@ func NewTranslator(opts ...*TranslateOptions) (Translator, error) {
 	if err != nil {
 		return nil, err
 	}
+	var client *http.Client
+	if options.HTTPClient != (&http.Client{}) {
+		client = options.HTTPClient
+	} else {
+		client = &http.Client{Timeout: 10 * time.Second}
+	}
 	// Create appropriate service based on provider
 	switch options.Provider {
 	case ProviderGoogle:
-		return NewGoogleTranslateService(options), nil
+		return NewGoogleTranslateService(client, options), nil
 	case ProviderMicrosoft:
-		return NewMicrosoftTranslateService(options), nil
+		return NewMicrosoftTranslateService(client, options), nil
 	default:
 		return nil, errors.New("unsupported provider: " + string(options.Provider))
 	}

@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/dinhcanh303/go_translate/utils"
 )
@@ -24,11 +23,7 @@ type GoogleTranslateService struct {
 
 // NewGoogleTranslateService creates a new instance of GoogleTranslateService with the given options.
 // The HTTP client timeout is set to 5 seconds.
-func NewGoogleTranslateService(opts *TranslateOptions) *GoogleTranslateService {
-	client := &http.Client{Timeout: 10 * time.Second}
-	if opts.HTTPClient != (&http.Client{Timeout: 10 * time.Second}) {
-		client = opts.HTTPClient
-	}
+func NewGoogleTranslateService(client *http.Client, opts *TranslateOptions) *GoogleTranslateService {
 	return &GoogleTranslateService{
 		client: client,
 		opts:   opts,

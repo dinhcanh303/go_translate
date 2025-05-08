@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/dinhcanh303/go_translate/utils"
 )
@@ -17,11 +16,7 @@ type MicrosoftTranslateService struct {
 }
 
 // NewMicrosoftTranslateService creates a new instance of MicrosoftTranslateService with the provided options.
-func NewMicrosoftTranslateService(opts *TranslateOptions) *MicrosoftTranslateService {
-	client := &http.Client{Timeout: 10 * time.Second}
-	if opts.HTTPClient != (&http.Client{Timeout: 10 * time.Second}) {
-		client = opts.HTTPClient
-	}
+func NewMicrosoftTranslateService(client *http.Client, opts *TranslateOptions) *MicrosoftTranslateService {
 	return &MicrosoftTranslateService{
 		client: client,
 		opts:   opts,
