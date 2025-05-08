@@ -1,10 +1,10 @@
 package go_translate
 
-var GoogleUrls map[int]string = map[int]string{
-	1: "/translate_a/t?client=dict-chrome-ex&sl=auto",
-	2: "/translate_a/single?client=gtx&sl=auto&dt=t",
-	3: "https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=auto&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL",
-	4: "https://translate-pa.googleapis.com/v1/translateHtml",
+var GoogleUrls map[GoogleAPIType]string = map[GoogleAPIType]string{
+	TypeClientDictChromeEx: "/translate_a/t?client=dict-chrome-ex&sl=auto",
+	TypeClientGtx:          "/translate_a/single?client=gtx&sl=auto&dt=t",
+	TypePaGtx:              "https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=auto&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL",
+	TypeHtml:               "https://translate-pa.googleapis.com/v1/translateHtml",
 }
 
 const MicrosoftServerUrl = "https://webmail.smartlinkcorp.com/dotrans_20160909.php"
@@ -69,7 +69,7 @@ var DefaultServiceUrls = []string{
 	"translate.google.tt",
 }
 
-var UserAgents = []string{
+var DefaultUserAgents = []string{
 	"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
 	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0.0.0 Safari/537.36",
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 13_2) AppleWebKit/605.1.15 Version/16.0 Safari/605.1.15",

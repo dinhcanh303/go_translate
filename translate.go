@@ -7,7 +7,8 @@ type Translator interface {
 func NewTranslator(opts *TranslateOptions) Translator {
 	if opts == nil {
 		opts = &TranslateOptions{
-			Provider: ProviderGoogle,
+			Provider:      ProviderGoogle,
+			GoogleAPIType: TypeHtml,
 		}
 	}
 	switch opts.Provider {

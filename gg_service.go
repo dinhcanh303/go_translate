@@ -26,22 +26,22 @@ func NewGoogleTranslateService(opts *TranslateOptions) *GoogleTranslateService {
 }
 
 func (s *GoogleTranslateService) TranslateText(text, target string, detectedLangCode ...string) (string, error) {
-	for i, endpoint := range GoogleUrls {
+	for t, endpoint := range GoogleUrls {
 		var translated string
 		var err error
-		switch i {
-		case 1, 2:
-			translated, err = s.callTranslateGet(text, target, endpoint, i == 2)
-		case 3:
-			translated, err = s.callTranslatePa(text, target, endpoint)
-		case 4:
+		switch t {
+		case TypeHtml:
 			translated, err = s.callTranslateHTML(text, target, endpoint)
+		case TypeClientGtx, TypeClientDictChromeEx:
+			translated, err = s.callTranslateGet(text, target, endpoint, t == TypeClientGtx)
+		case TypePaGtx:
+			translated, err = s.callTranslatePa(text, target, endpoint)
 		}
 
 		if err == nil && translated != "" {
 			return translated, nil
 		}
-		log.Printf("[ERROR] API %d failed: %v", i, err)
+		log.Printf("[ERROR] API %s failed: %v", t, err)
 	}
 	return "", errors.New("unable to translate text, all APIs failed")
 }
@@ -49,7 +49,7 @@ func (s *GoogleTranslateService) TranslateText(text, target string, detectedLang
 func (s *GoogleTranslateService) callTranslateHTML(text, target, endpoint string) (string, error) {
 	body := fmt.Sprintf(`[[["%s"],"auto","%s"],"wt_lib"]`, text, target)
 	headers := map[string]string{
-		"Accept":         "/",
+		"User-Agent":     utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 		"Content-Type":   "application/json+protobuf",
 		"X-Goog-API-Key": GOOGLE_API_KEY_TRANSLATE,
 	}
@@ -61,15 +61,7 @@ func (s *GoogleTranslateService) callTranslateHTML(text, target, endpoint string
 }
 
 func (s *GoogleTranslateService) callTranslateGet(text, target, endpoint string, isGtx bool) (string, error) {
-	sv := DefaultServiceUrls[0]
-	if s.opts.RandomServiceUrls && len(s.opts.ServiceUrls) > 0 {
-		sv = utils.GetRandom(s.opts.ServiceUrls)
-	}
-	if s.opts.RandomServiceUrls {
-		sv = utils.GetRandom(DefaultServiceUrls)
-	}
-	fullURL := "https://" + sv + endpoint
-
+	fullURL := "https://" + utils.GetConditionalRandomValue(DefaultServiceUrls, s.opts.CustomServiceUrls, s.opts.UseRandomServiceUrls) + endpoint
 	params := url.Values{
 		"tl": {target},
 		"q":  {text},
@@ -77,12 +69,8 @@ func (s *GoogleTranslateService) callTranslateGet(text, target, endpoint string,
 	if s.opts.AddToken {
 		params.Set("tk", utils.GgTokenGenerate(text))
 	}
-	userAgent := UserAgents[0]
-	if s.opts.RandomUserAgents {
-		userAgent = utils.GetRandom(UserAgents)
-	}
 	headers := map[string]string{
-		"User-Agent": userAgent,
+		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 	}
 	respBytes, err := s.doRequest("GET", fullURL, headers, params, nil)
 	if err != nil {
@@ -100,11 +88,14 @@ func (s *GoogleTranslateService) callTranslatePa(text, target, endpoint string) 
 		"key":                   {GOOGLE_API_KEY_TRANSLATE_PA},
 		"query.text":            {text},
 	}
-	respBytes, err := s.doRequest("GET", endpoint, nil, params, nil)
+	headers := map[string]string{
+		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
+	}
+	respBytes, err := s.doRequest("GET", endpoint, headers, params, nil)
 	if err != nil {
 		return "", err
 	}
-	return utils.ExtractTranslatedTextJson(respBytes)
+	return utils.ExtractTranslatedTextFromJson(respBytes)
 }
 
 func (s *GoogleTranslateService) doRequest(method, endpoint string, headers map[string]string, params url.Values, body []byte) ([]byte, error) {
