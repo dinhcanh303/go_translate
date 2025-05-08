@@ -18,8 +18,12 @@ type MicrosoftTranslateService struct {
 
 // NewMicrosoftTranslateService creates a new instance of MicrosoftTranslateService with the provided options.
 func NewMicrosoftTranslateService(opts *TranslateOptions) *MicrosoftTranslateService {
+	client := &http.Client{Timeout: 10 * time.Second}
+	if opts.HTTPClient != (&http.Client{Timeout: 10 * time.Second}) {
+		client = opts.HTTPClient
+	}
 	return &MicrosoftTranslateService{
-		client: &http.Client{Timeout: 5 * time.Second},
+		client: client,
 		opts:   opts,
 	}
 }

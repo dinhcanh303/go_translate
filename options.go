@@ -1,9 +1,15 @@
 package go_translate
 
+import "net/http"
+
 // TranslateOptions defines configurable options for the translation service.
 type TranslateOptions struct {
+
 	// Provider specifies which translation provider to use (e.g., Google or Microsoft).
 	Provider Provider
+
+	//HTTPClient config
+	HTTPClient *http.Client
 
 	// GoogleAPIType specifies the API type to use for Google Translate (e.g., "html" || "pa-gtx" || "client-gtx" || "client-dict").
 	GoogleAPIType GoogleAPIType

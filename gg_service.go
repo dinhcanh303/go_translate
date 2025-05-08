@@ -25,8 +25,12 @@ type GoogleTranslateService struct {
 // NewGoogleTranslateService creates a new instance of GoogleTranslateService with the given options.
 // The HTTP client timeout is set to 5 seconds.
 func NewGoogleTranslateService(opts *TranslateOptions) *GoogleTranslateService {
+	client := &http.Client{Timeout: 10 * time.Second}
+	if opts.HTTPClient != (&http.Client{Timeout: 10 * time.Second}) {
+		client = opts.HTTPClient
+	}
 	return &GoogleTranslateService{
-		client: &http.Client{Timeout: 5 * time.Second},
+		client: client,
 		opts:   opts,
 	}
 }
@@ -52,7 +56,6 @@ func (s *GoogleTranslateService) translate(texts []string, target string) ([]str
 	}
 	// If translation is successful, return the result
 	if err == nil && translatedText != nil {
-		log.Printf("API:: %s completed", googleApiType)
 		return translatedText, nil
 	}
 	log.Printf("[ERROR] API %s failed: %v", googleApiType, err)
