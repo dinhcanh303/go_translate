@@ -30,7 +30,7 @@ func DecodeUnicode(text string) (string, error) {
 	return output, nil
 }
 
-func ExtractTranslatedTextJson(respBody []byte) (string, error) {
+func ExtractTranslatedTextFromJson(respBody []byte) (string, error) {
 	var result struct {
 		Translation string `json:"translation"`
 	}
@@ -67,6 +67,16 @@ func ExtractTranslatedTextFromArray(data []byte) (string, error) {
 	return builder.String(), nil
 }
 
-func GetRandom[T any](data []T) T {
+func GetRandomValue[T any](data []T) T {
 	return data[rand.Intn(len(data))]
+}
+
+func GetConditionalRandomValue[T any](defaultData, data []T, condition bool) T {
+	if condition && len(data) > 0 {
+		return GetRandomValue(data)
+	}
+	if condition {
+		return GetRandomValue(defaultData)
+	}
+	return defaultData[0]
 }
