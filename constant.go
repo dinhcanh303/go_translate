@@ -11,62 +11,59 @@ const MicrosoftServerUrl = "https://webmail.smartlinkcorp.com/dotrans_20160909.p
 
 var DefaultServiceUrls = []string{
 	"translate.google.com",
-	"translate.google.ad",
-	"translate.google.at",
-	"translate.google.be",
-	"translate.google.bi",
-	"translate.google.bj",
-	"translate.google.cm",
-	"translate.google.co.cr",
-	"translate.google.co.id",
-	"translate.google.co.mz",
-	"translate.google.co.nz",
-	"translate.google.co.th",
-	"translate.google.co.tz",
-	"translate.google.co.vi",
-	"translate.google.co.zw",
-	"translate.google.com.ai",
-	"translate.google.com.bz",
-	"translate.google.com.co",
-	"translate.google.com.cu",
-	"translate.google.com.cy",
-	"translate.google.com.gh",
-	"translate.google.com.gi",
-	"translate.google.com.gt",
-	"translate.google.com.hk",
-	"translate.google.com.lb",
-	"translate.google.com.ly",
-	"translate.google.com.mx",
-	"translate.google.com.my",
-	"translate.google.com.pk",
-	"translate.google.com.py",
-	"translate.google.com.sa",
-	"translate.google.com.sl",
-	"translate.google.com.tj",
-	"translate.google.com.uy",
-	"translate.google.com.vc",
-	"translate.google.com.vn",
-	"translate.google.cv",
-	"translate.google.cz",
-	"translate.google.dz",
-	"translate.google.gp",
-	"translate.google.hu",
-	"translate.google.je",
-	"translate.google.kg",
-	"translate.google.ki",
-	"translate.google.lv",
-	"translate.google.md",
-	"translate.google.mk",
-	"translate.google.ne",
-	"translate.google.ps",
-	"translate.google.rw",
-	"translate.google.se",
-	"translate.google.sh",
-	"translate.google.si",
-	"translate.google.sk",
-	"translate.google.tg",
-	"translate.google.tn",
-	"translate.google.tt",
+	"translate.google.mk",     //152ms-50ms
+	"translate.google.co.th",  //167ms-55ms
+	"translate.google.com.co", //63ms-211ms
+	"translate.google.com.mx", //57ms-149ms
+	"translate.google.com.tj", //189ms-51ms
+	"translate.google.cv",     //186ms-95ms
+	"translate.google.gp",     //185ms-74ms
+	"translate.google.ki",     //175ms-70ms
+	"translate.google.ps",     //174ms-68ms
+	"translate.google.com.py", //167ms-52ms
+	"translate.google.com.gh", //167ms-53ms
+	"translate.google.com.gi", //171ms-110ms
+	"translate.google.com.uy", //177ms-53ms
+	"translate.google.com.vc", //146ms-49ms
+	"translate.google.hu",     //171ms-59ms
+	"translate.google.bi",     //181ms-59ms
+	"translate.google.dz",     //193ms-65ms
+	"translate.google.com.bz", //194ms-52ms
+	"translate.google.com.sa", //194ms-57ms
+	"translate.google.kg",     //195ms-53ms
+	"translate.google.cm",     //172ms-178ms
+	"translate.google.co.id",  //180ms-73ms
+	"translate.google.co.tz",  //195ms-62ms
+	"translate.google.com.cu", //178ms-82ms
+	// "translate.google.com.ly", //197ms-74ms
+	// "translate.google.je",     //194ms-227ms
+	// "translate.google.com.gt", //164ms-227ms
+	// "translate.google.com.sl", //116ms-218ms
+	// "translate.google.com.vn", //60ms-208ms
+	// "translate.google.ad",     //217ms-232ms
+	// "translate.google.be",     //217ms-208ms
+	// "translate.google.co.cr",  //212ms-116ms
+	// "translate.google.co.mz",  //224ms-81ms
+	// "translate.google.co.vi",  //279ms-68ms
+	// "translate.google.com.ai", //202ms-54ms
+	// "translate.google.com.cy", //286ms-55ms
+	// "translate.google.com.lb", //225ms-70ms
+	// "translate.google.com.my", //206ms-59ms
+	// "translate.google.com.pk", //272ms-177ms
+	// "translate.google.cz",     //227ms-73ms
+	// "translate.google.lv",     //202ms-55ms
+	// "translate.google.ne",     //205ms-70ms
+	// "translate.google.rw",     //216ms-71ms
+	// "translate.google.se",     //233ms-84ms
+	// "translate.google.sh",     //248ms-83ms
+	// "translate.google.si",     //255ms-63ms
+	// "translate.google.sk",     //242ms-100ms
+	// "translate.google.co.zw",  //201ms-108ms
+	// "translate.google.co.nz",  //230ms-61ms
+	// "translate.google.com.hk", //201ms-50ms
+	// "translate.google.tn",     //209ms-66ms
+	// "translate.google.tt",     //237ms-62ms
+	// "translate.google.at",     //5.17s-223ms
 }
 
 var DefaultUserAgents = []string{
