@@ -3,6 +3,7 @@ package go_translate
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -32,7 +33,7 @@ func NewGoogleTranslateService(client *http.Client, opts *TranslateOptions) *Goo
 
 // It tries multiple endpoints based on the API type (HTML, PaGtx, ClientGtx, etc.) and returns the translated text.
 // It returns an error if all translation attempts fail.
-func (s *GoogleTranslateService) translate(texts []string, target string) ([]string, error) {
+func (s *GoogleTranslateService) translate(ctx context.Context, texts []string, target string) ([]string, error) {
 	var translatedText []string
 	var err error
 	googleApiType := s.opts.GoogleAPIType
@@ -43,11 +44,11 @@ func (s *GoogleTranslateService) translate(texts []string, target string) ([]str
 	// Try each API endpoint
 	switch googleApiType {
 	case TypeHtml:
-		translatedText, err = s.callTranslateHTML(texts, target, endpoint)
+		translatedText, err = s.callTranslateHTML(ctx, texts, target, endpoint)
 	case TypeClientGtx, TypeClientDictChromeEx:
-		translatedText, err = s.callTranslateGet(texts, target, endpoint, googleApiType == TypeClientGtx)
+		translatedText, err = s.callTranslateGet(ctx, texts, target, endpoint, googleApiType == TypeClientGtx)
 	case TypePaGtx:
-		translatedText, err = s.callTranslatePa(texts, target, endpoint)
+		translatedText, err = s.callTranslatePa(ctx, texts, target, endpoint)
 	}
 	// If translation is successful, return the result
 	if err == nil && translatedText != nil {
@@ -59,19 +60,19 @@ func (s *GoogleTranslateService) translate(texts []string, target string) ([]str
 
 // TranslateBatchText translates the provided text into the target language using the configured provider and API type.
 // It returns an error if all translation attempts fail.
-func (s *GoogleTranslateService) TranslateText(texts []string, target string, detectedLangCode ...string) ([]string, error) {
-	return s.translate(texts, target)
+func (s *GoogleTranslateService) TranslateText(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	return s.translate(ctx, texts, target)
 }
 
 // callTranslateHTML makes a POST request to the HTML API endpoint and returns the translated text.
-func (s *GoogleTranslateService) callTranslateHTML(texts []string, target, endpoint string) ([]string, error) {
+func (s *GoogleTranslateService) callTranslateHTML(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
 	body := buildGoogleHTMLBody(texts, target)
 	headers := map[string]string{
 		"User-Agent":     utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 		"Content-Type":   "application/json+protobuf",
 		"X-Goog-API-Key": GOOGLE_API_KEY_TRANSLATE,
 	}
-	respBytes, err := s.doRequest("POST", endpoint, headers, nil, []byte(body))
+	respBytes, err := s.doRequest(ctx, "POST", endpoint, headers, nil, []byte(body))
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func (s *GoogleTranslateService) callTranslateHTML(texts []string, target, endpo
 }
 
 // callTranslateGet makes a GET request to the Google Translate API (client-gtx or client-dict) and returns the translated text.
-func (s *GoogleTranslateService) callTranslateGet(texts []string, target, endpoint string, isGtx bool) ([]string, error) {
+func (s *GoogleTranslateService) callTranslateGet(ctx context.Context, texts []string, target, endpoint string, isGtx bool) ([]string, error) {
 	text := utils.JoinWithSeparator(texts)
 	fullURL := "https://" + utils.GetConditionalRandomValue(DefaultServiceUrls, s.opts.CustomServiceUrls, s.opts.UseRandomServiceUrls) + endpoint
 	params := url.Values{
@@ -92,7 +93,7 @@ func (s *GoogleTranslateService) callTranslateGet(texts []string, target, endpoi
 	headers := map[string]string{
 		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 	}
-	respBytes, err := s.doRequest("GET", fullURL, headers, params, nil)
+	respBytes, err := s.doRequest(ctx, "GET", fullURL, headers, params, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +104,7 @@ func (s *GoogleTranslateService) callTranslateGet(texts []string, target, endpoi
 }
 
 // callTranslatePa makes a GET request to the PaGtx API endpoint and returns the translated text.
-func (s *GoogleTranslateService) callTranslatePa(texts []string, target, endpoint string) ([]string, error) {
+func (s *GoogleTranslateService) callTranslatePa(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
 	params := url.Values{
 		"query.target_language": {target},
 		"key":                   {GOOGLE_API_KEY_TRANSLATE_PA},
@@ -112,7 +113,7 @@ func (s *GoogleTranslateService) callTranslatePa(texts []string, target, endpoin
 	headers := map[string]string{
 		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
 	}
-	respBytes, err := s.doRequest("GET", endpoint, headers, params, nil)
+	respBytes, err := s.doRequest(ctx, "GET", endpoint, headers, params, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +122,7 @@ func (s *GoogleTranslateService) callTranslatePa(texts []string, target, endpoin
 
 // doRequest is a helper function that performs the HTTP request (GET or POST) with the given method, URL, headers, parameters, and body.
 // It returns the response body as a byte slice or an error if the request fails.
-func (s *GoogleTranslateService) doRequest(method, endpoint string, headers map[string]string, params url.Values, body []byte) ([]byte, error) {
+func (s *GoogleTranslateService) doRequest(ctx context.Context, method, endpoint string, headers map[string]string, params url.Values, body []byte) ([]byte, error) {
 	reqURL := endpoint
 	if params != nil {
 		u, err := url.Parse(endpoint)
@@ -136,7 +137,7 @@ func (s *GoogleTranslateService) doRequest(method, endpoint string, headers map[
 	if body != nil {
 		reqBody = bytes.NewBuffer(body)
 	}
-	req, err := http.NewRequest(method, reqURL, reqBody)
+	req, err := http.NewRequestWithContext(ctx, method, reqURL, reqBody)
 	if err != nil {
 		return nil, err
 	}

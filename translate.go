@@ -3,6 +3,7 @@
 package go_translate
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"time"
@@ -15,7 +16,7 @@ import (
 type Translator interface {
 	// TranslateText translates the input `text` into the `target` language code (e.g., "en", "vi").
 	// Optionally, a detected source language code can be provided to skip language detection.
-	TranslateText(text []string, target string, detectedLangCode ...string) ([]string, error)
+	TranslateText(ctx context.Context, text []string, target string, detectedLangCode ...string) ([]string, error)
 }
 
 // NewTranslator returns a Translator implementation based on the given TranslateOptions.

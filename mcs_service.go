@@ -2,6 +2,7 @@ package go_translate
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"net/url"
@@ -25,13 +26,13 @@ func NewMicrosoftTranslateService(client *http.Client, opts *TranslateOptions) *
 
 // TranslateText performs the translation of the provided text into the target language using the Microsoft translation API.
 // It also optionally accepts a detected language code if you want to specify the source language explicitly.
-func (m *MicrosoftTranslateService) TranslateText(texts []string, target string, detectedLangCode ...string) ([]string, error) {
-	return m.translate(texts, target, detectedLangCode...)
+func (m *MicrosoftTranslateService) TranslateText(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	return m.translate(ctx, texts, target, detectedLangCode...)
 }
 
 // TranslateText performs the translation of the provided text into the target language using the Microsoft translation API.
 // It also optionally accepts a detected language code if you want to specify the source language explicitly.
-func (m *MicrosoftTranslateService) translate(texts []string, target string, detectedLangCode ...string) ([]string, error) {
+func (m *MicrosoftTranslateService) translate(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
 	dir := "en/" + target
 	if len(detectedLangCode) > 0 {
 		dir = detectedLangCode[0] + "/" + target
@@ -42,7 +43,7 @@ func (m *MicrosoftTranslateService) translate(texts []string, target string, det
 		"dir":      {dir},
 		"provider": {"microsoft"},
 	}
-	req, err := http.NewRequest("POST", MicrosoftServerUrl, bytes.NewBufferString(formData.Encode()))
+	req, err := http.NewRequestWithContext(ctx, "POST", MicrosoftServerUrl, bytes.NewBufferString(formData.Encode()))
 	if err != nil {
 		return nil, err
 	}

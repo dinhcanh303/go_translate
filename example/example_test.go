@@ -3,6 +3,7 @@ package example
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/dinhcanh303/go_translate"
 	"github.com/dinhcanh303/go_translate/example/grpc_client"
@@ -10,6 +11,8 @@ import (
 )
 
 func TestExample(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	client, err := grpc_client.NewGRPCLanguageDetectionClient("127.0.0.1:50055")
 	require.Nil(t, err)
 	require.NotNil(t, client)
@@ -22,7 +25,7 @@ func TestExample(t *testing.T) {
 	})
 	require.NotNil(t, translator)
 	require.Nil(t, err)
-	result, err := translator.TranslateText(texts, "vi", resp.DetectedLang)
+	result, err := translator.TranslateText(ctx, texts, "vi", resp.DetectedLang)
 	require.Nil(t, err)
 	require.Equal(t, result, "Chào thế giới")
 }
