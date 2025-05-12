@@ -19,4 +19,10 @@ const (
 
 	//TypeRandom uses random multiple endpoint Google Translate API
 	TypeRandom GoogleAPIType = "random"
+
+	// TypeSequential tries APIs in a fixed order, one after another.
+	TypeSequential GoogleAPIType = "sequential"
+
+	// TypeMix of random and sequential (not implemented yet, placeholder for future use)
+	TypeMix GoogleAPIType = "mix"
 )

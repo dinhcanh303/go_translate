@@ -28,11 +28,9 @@ func NewTranslator(opts ...*TranslateOptions) (Translator, error) {
 	if err != nil {
 		return nil, err
 	}
-	var client *http.Client
-	if options.HTTPClient != (&http.Client{}) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	if options.HTTPClient != nil {
 		client = options.HTTPClient
-	} else {
-		client = &http.Client{Timeout: 10 * time.Second}
 	}
 	// Create appropriate service based on provider
 	switch options.Provider {
@@ -58,7 +56,7 @@ func validateOptions(opts ...*TranslateOptions) (*TranslateOptions, error) {
 			options.GoogleAPIType = TypeHtml
 		}
 		// Set default GoogleAPIType
-		validTypes := map[GoogleAPIType]struct{}{TypeHtml: {}, TypeClientGtx: {}, TypeClientDictChromeEx: {}, TypePaGtx: {}, TypeRandom: {}}
+		validTypes := MpGoogleAPITypeSupport
 		if _, ok := validTypes[options.GoogleAPIType]; !ok {
 			return nil, errors.New("unsupported Google API Type, please check list supported")
 		}

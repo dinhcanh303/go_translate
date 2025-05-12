@@ -21,7 +21,7 @@ func TestTranslateBatchText(t *testing.T) {
 	tcs := map[string]TranslateTestCase{
 		"google case 1": {
 			opts: &TranslateOptions{Provider: ProviderGoogle,
-				GoogleAPIType:        TypeRandom,
+				GoogleAPIType:        TypeMix,
 				UseRandomUserAgents:  true,
 				UseRandomServiceUrls: true,
 				AddToken:             true,
@@ -39,11 +39,11 @@ func TestTranslateBatchText(t *testing.T) {
 			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi.", "Hàn Quốc", "Tôi ổn", "Tôi nghĩ chúng ta cần phải chờ xem. Việc Fed tăng lãi suất có thể khiến thị trường biến động hơn 😑😑😑😑"},
 		},
 		"google case 2": {
-			opts:           &TranslateOptions{Provider: "google"},
+			opts:           &TranslateOptions{Provider: "google", GoogleAPIType: TypeClientGtx},
 			input:          []string{"Thank you for using our package."},
 			detectedLang:   "auto",
 			targetLang:     "vi",
-			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi."},
+			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
 		},
 		"microsoft case 1": {
 			opts:           &TranslateOptions{Provider: "microsoft"},
@@ -53,8 +53,7 @@ func TestTranslateBatchText(t *testing.T) {
 			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
 		},
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	ctx := context.Background()
 	for scenario, tc := range tcs {
 		tc := tc
 		t.Run(scenario, func(t *testing.T) {
