@@ -27,7 +27,7 @@ func (g *languageDetectionGRPCClient) DetectLanguage(ctx context.Context, text s
 
 // NewGRPCLanguageDetectionClient creates a new gRPC client connection
 func NewGRPCLanguageDetectionClient(grpcURL string) (LanguageDetectionService, error) {
-	conn, err := grpc.Dial(grpcURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(grpcURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
