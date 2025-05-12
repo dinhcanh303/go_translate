@@ -1,13 +1,17 @@
 package go_translate
 
 var GoogleUrls map[GoogleAPIType]string = map[GoogleAPIType]string{
+	TypeHtml:               "https://translate-pa.googleapis.com/v1/translateHtml",
 	TypeClientDictChromeEx: "/translate_a/t?client=dict-chrome-ex&sl=auto",
 	TypeClientGtx:          "/translate_a/single?client=gtx&sl=auto&dt=t",
 	TypePaGtx:              "https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=auto&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL",
-	TypeHtml:               "https://translate-pa.googleapis.com/v1/translateHtml",
 }
 
 const MicrosoftServerUrl = "https://webmail.smartlinkcorp.com/dotrans_20160909.php"
+
+var GoogleAPITypeSupport = []GoogleAPIType{TypeHtml, TypeClientGtx, TypeClientDictChromeEx, TypePaGtx}
+
+var MpGoogleAPITypeSupport = map[GoogleAPIType]struct{}{TypeHtml: {}, TypeClientGtx: {}, TypeClientDictChromeEx: {}, TypePaGtx: {}, TypeRandom: {}, TypeSequential: {}, TypeMix: {}}
 
 var DefaultServiceUrls = []string{
 	"translate.google.com",
