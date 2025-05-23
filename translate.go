@@ -5,6 +5,7 @@ package go_translate
 import (
 	"context"
 	"errors"
+	"math/rand"
 	"net/http"
 	"time"
 )
@@ -38,6 +39,12 @@ func NewTranslator(opts ...*TranslateOptions) (Translator, error) {
 		return NewGoogleTranslateService(client, options), nil
 	case ProviderMicrosoft:
 		return NewMicrosoftTranslateService(client, options), nil
+	case ProviderMix:
+		if rand.Intn(2) == 0 {
+			return NewGoogleTranslateService(client, options), nil
+		} else {
+			return NewMicrosoftTranslateService(client, options), nil
+		}
 	default:
 		return nil, errors.New("unsupported provider: " + string(options.Provider))
 	}
@@ -60,6 +67,9 @@ func validateOptions(opts ...*TranslateOptions) (*TranslateOptions, error) {
 		}
 		if options.GoogleAPIKeyTranslatePa == "" {
 			options.GoogleAPIKeyTranslatePa = GOOGLE_API_KEY_TRANSLATE_PA
+		}
+		if options.GoogleAPIKeyTranslateDic == "" {
+			options.GoogleAPIKeyTranslateDic = GOOGLE_API_KEY_TRANSLATE_DIC
 		}
 		// Set default GoogleAPIType
 		validTypes := MpGoogleAPITypeSupport

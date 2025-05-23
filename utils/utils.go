@@ -154,3 +154,23 @@ func ExtractTranslatedTextFromMCSEdge(data []byte) ([]string, error) {
 	}
 	return texts, nil
 }
+
+type TranslateResponse struct {
+	TranslateText          string `json:"translateText"`
+	DetectedSourceLanguage string `json:"detectedSourceLanguage"`
+	OutputLanguage         string `json:"outputLanguage"`
+	SourceText             string `json:"sourceText"`
+}
+
+type Response struct {
+	Status            int               `json:"status"`
+	TranslateResponse TranslateResponse `json:"translateResponse"`
+}
+
+func ExtractTranslatedTextFromGGDic(data []byte) ([]string, error) {
+	var res Response
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return SplitWithSeparator(res.TranslateResponse.TranslateText), nil
+}

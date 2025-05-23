@@ -5,6 +5,7 @@ var GoogleUrls map[GoogleAPIType]string = map[GoogleAPIType]string{
 	TypeClientDictChromeEx: "/translate_a/t?client=dict-chrome-ex&sl=auto",
 	TypeClientGtx:          "/translate_a/single?client=gtx&sl=auto&dt=t",
 	TypePaGtx:              "https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=auto&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL",
+	TypeDictionary:         "https://dictionaryextension-pa.googleapis.com/v1/dictionaryExtensionData?strategy=2",
 }
 
 var MicrosoftUrls map[MicrosoftAPIType]string = map[MicrosoftAPIType]string{
@@ -15,9 +16,9 @@ const AuthEdgeUrl = "https://edge.microsoft.com/translate/auth"
 
 const MicrosoftServerUrl = "https://webmail.smartlinkcorp.com/dotrans_20160909.php"
 
-var GoogleAPITypeSupport = []GoogleAPIType{TypeHtml, TypeClientGtx, TypeClientDictChromeEx, TypePaGtx}
+var GoogleAPITypeSupport = []GoogleAPIType{TypeHtml, TypeClientGtx, TypeClientDictChromeEx, TypePaGtx, TypeDictionary}
 
-var MpGoogleAPITypeSupport = map[GoogleAPIType]struct{}{TypeHtml: {}, TypeClientGtx: {}, TypeClientDictChromeEx: {}, TypePaGtx: {}, TypeRandom: {}, TypeSequential: {}, TypeMix: {}}
+var MpGoogleAPITypeSupport = map[GoogleAPIType]struct{}{TypeHtml: {}, TypeClientGtx: {}, TypeClientDictChromeEx: {}, TypePaGtx: {}, TypeDictionary: {}, TypeRandom: {}, TypeSequential: {}, TypeMix: {}}
 
 var DefaultServiceUrls = []string{
 	"translate.google.com",
@@ -138,3 +139,4 @@ var DefaultUserAgents = []string{
 
 const GOOGLE_API_KEY_TRANSLATE_HTML = "AIzaSyATBXajvzQLTDHEQbcpq0Ihe0vWDHmO520"
 const GOOGLE_API_KEY_TRANSLATE_PA = "AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA"
+const GOOGLE_API_KEY_TRANSLATE_DIC = "AIzaSyA6EEtrDCfBkHV8uU2lgGY-N383ZgAOo7Y"

@@ -103,6 +103,21 @@ func (s *GoogleTranslateService) callTranslatePa(ctx context.Context, texts []st
 	return s.executeAPIRequest(ctx, "GET", endpoint, headers, params, nil, utils.ExtractTranslatedTextFromJson)
 }
 
+// callTranslatePa makes a GET request to the PaGtx API endpoint and returns the translated text.
+func (s *GoogleTranslateService) callTranslateDic(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
+	params := url.Values{
+		"language": {target},
+		"key":      {s.opts.GoogleAPIKeyTranslateDic},
+		"term":     {utils.JoinWithSeparator(texts)},
+	}
+	headers := map[string]string{
+		"User-Agent": utils.GetConditionalRandomValue(DefaultUserAgents, s.opts.CustomUserAgents, s.opts.UseRandomUserAgents),
+		"x-referer":  "chrome-extension://mgijmajocgfcbeboacabfgobmjgjcoja",
+	}
+
+	return s.executeAPIRequest(ctx, "GET", endpoint, headers, params, nil, utils.ExtractTranslatedTextFromGGDic)
+}
+
 // callTranslateGet makes a GET request to the Google Translate API (client-gtx or client-dict) and returns the translated text.
 func (s *GoogleTranslateService) callTranslateSequential(ctx context.Context, texts []string, target string) ([]string, error) {
 	handlers := s.getAPIHandlers()
@@ -187,6 +202,9 @@ func (s *GoogleTranslateService) getAPIHandlers() map[GoogleAPIType]apiHandler {
 		},
 		TypePaGtx: func(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
 			return s.callTranslatePa(ctx, texts, target, endpoint)
+		},
+		TypeDictionary: func(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
+			return s.callTranslateDic(ctx, texts, target, endpoint)
 		},
 		TypeSequential: func(ctx context.Context, texts []string, target, endpoint string) ([]string, error) {
 			return s.callTranslateSequential(ctx, texts, target)

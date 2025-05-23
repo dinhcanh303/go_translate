@@ -17,6 +17,9 @@ const (
 	// TypeClientDictChromeEx uses "client=dict-chrome-ex" — used in Chrome dictionary extension.
 	TypeClientDictChromeEx GoogleAPIType = "client-dict"
 
+	// TypeDictionary uses "key" — used in Chrome dictionary extension.
+	TypeDictionary GoogleAPIType = "dictionary"
+
 	//TypeRandom uses random multiple endpoint Google Translate API
 	TypeRandom GoogleAPIType = "random"
 

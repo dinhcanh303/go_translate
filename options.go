@@ -37,4 +37,7 @@ type TranslateOptions struct {
 
 	//API Key endpoint PA
 	GoogleAPIKeyTranslatePa string
+
+	//API Key endpoint Dictionary
+	GoogleAPIKeyTranslateDic string
 }

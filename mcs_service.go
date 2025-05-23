@@ -69,6 +69,7 @@ func (m *MicrosoftTranslateService) callTranslateEdge(ctx context.Context, texts
 
 // callTranslateSmartLink makes a POST request to the Microsoft translate API endpoint of smart link and returns the translated text.
 func (m *MicrosoftTranslateService) callTranslateSmartLink(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	// detectedLang , err := utils.DoRequest(m.client,ctx,"GET","")
 	dir := "en/" + target
 	if len(detectedLangCode) > 0 {
 		dir = detectedLangCode[0] + "/" + target

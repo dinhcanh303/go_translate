@@ -20,8 +20,8 @@ func TestTranslateBatchText(t *testing.T) {
 	}
 	tcs := map[string]TranslateTestCase{
 		"google case 1": {
-			opts: &TranslateOptions{Provider: ProviderGoogle,
-				GoogleAPIType:        TypeMix,
+			opts: &TranslateOptions{Provider: ProviderMix,
+				GoogleAPIType:        TypeDictionary,
 				UseRandomUserAgents:  true,
 				UseRandomServiceUrls: true,
 				AddToken:             true,
