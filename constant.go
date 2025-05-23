@@ -7,6 +7,12 @@ var GoogleUrls map[GoogleAPIType]string = map[GoogleAPIType]string{
 	TypePaGtx:              "https://translate-pa.googleapis.com/v1/translate?params.client=gtx&query.source_language=auto&data_types=TRANSLATION&data_types=SENTENCE_SPLITS&data_types=BILINGUAL_DICTIONARY_FULL",
 }
 
+var MicrosoftUrls map[MicrosoftAPIType]string = map[MicrosoftAPIType]string{
+	TypeEdge: "https://api-edge.cognitive.microsofttranslator.com/translate?api-version=3.0&includeSentenceLength=false&to=",
+}
+
+const AuthEdgeUrl = "https://edge.microsoft.com/translate/auth"
+
 const MicrosoftServerUrl = "https://webmail.smartlinkcorp.com/dotrans_20160909.php"
 
 var GoogleAPITypeSupport = []GoogleAPIType{TypeHtml, TypeClientGtx, TypeClientDictChromeEx, TypePaGtx}
@@ -39,34 +45,34 @@ var DefaultServiceUrls = []string{
 	"translate.google.co.id",  //180ms-73ms
 	"translate.google.co.tz",  //195ms-62ms
 	"translate.google.com.cu", //178ms-82ms
-	// "translate.google.com.ly", //197ms-74ms
-	// "translate.google.je",     //194ms-227ms
-	// "translate.google.com.gt", //164ms-227ms
-	// "translate.google.com.sl", //116ms-218ms
-	// "translate.google.com.vn", //60ms-208ms
-	// "translate.google.ad",     //217ms-232ms
-	// "translate.google.be",     //217ms-208ms
-	// "translate.google.co.cr",  //212ms-116ms
-	// "translate.google.co.mz",  //224ms-81ms
-	// "translate.google.co.vi",  //279ms-68ms
-	// "translate.google.com.ai", //202ms-54ms
-	// "translate.google.com.cy", //286ms-55ms
-	// "translate.google.com.lb", //225ms-70ms
-	// "translate.google.com.my", //206ms-59ms
-	// "translate.google.com.pk", //272ms-177ms
-	// "translate.google.cz",     //227ms-73ms
-	// "translate.google.lv",     //202ms-55ms
-	// "translate.google.ne",     //205ms-70ms
-	// "translate.google.rw",     //216ms-71ms
-	// "translate.google.se",     //233ms-84ms
-	// "translate.google.sh",     //248ms-83ms
-	// "translate.google.si",     //255ms-63ms
-	// "translate.google.sk",     //242ms-100ms
-	// "translate.google.co.zw",  //201ms-108ms
-	// "translate.google.co.nz",  //230ms-61ms
-	// "translate.google.com.hk", //201ms-50ms
-	// "translate.google.tn",     //209ms-66ms
-	// "translate.google.tt",     //237ms-62ms
+	"translate.google.com.ly", //197ms-74ms
+	"translate.google.je",     //194ms-227ms
+	"translate.google.com.gt", //164ms-227ms
+	"translate.google.com.sl", //116ms-218ms
+	"translate.google.com.vn", //60ms-208ms
+	"translate.google.ad",     //217ms-232ms
+	"translate.google.be",     //217ms-208ms
+	"translate.google.co.cr",  //212ms-116ms
+	"translate.google.co.mz",  //224ms-81ms
+	"translate.google.co.vi",  //279ms-68ms
+	"translate.google.com.ai", //202ms-54ms
+	"translate.google.com.cy", //286ms-55ms
+	"translate.google.com.lb", //225ms-70ms
+	"translate.google.com.my", //206ms-59ms
+	"translate.google.com.pk", //272ms-177ms
+	"translate.google.cz",     //227ms-73ms
+	"translate.google.lv",     //202ms-55ms
+	"translate.google.ne",     //205ms-70ms
+	"translate.google.rw",     //216ms-71ms
+	"translate.google.se",     //233ms-84ms
+	"translate.google.sh",     //248ms-83ms
+	"translate.google.si",     //255ms-63ms
+	"translate.google.sk",     //242ms-100ms
+	"translate.google.co.zw",  //201ms-108ms
+	"translate.google.co.nz",  //230ms-61ms
+	"translate.google.com.hk", //201ms-50ms
+	"translate.google.tn",     //209ms-66ms
+	"translate.google.tt",     //237ms-62ms
 	// "translate.google.at",     //5.17s-223ms
 }
 
@@ -124,7 +130,11 @@ var DefaultUserAgents = []string{
 	"Mozilla/5.0 (iPhone; U; CPU iPhone OS) (compatible; Googlebot-Mobile/2.1; http://www.google.com/bot.html)",
 	"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
 	"DoCoMo/2.0 N905i(c100;TB;W24H16) (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)",
+	//Tool call api
+	"PostmanRuntime/7.44.0",
+	"Go-http-client/1.1",
+	"insomnia/2023.5.8",
 }
 
-const GOOGLE_API_KEY_TRANSLATE = "AIzaSyATBXajvzQLTDHEQbcpq0Ihe0vWDHmO520"
+const GOOGLE_API_KEY_TRANSLATE_HTML = "AIzaSyATBXajvzQLTDHEQbcpq0Ihe0vWDHmO520"
 const GOOGLE_API_KEY_TRANSLATE_PA = "AIzaSyDLEeFI5OtFBwYBIoK_jj5m32rZK5CkCXA"

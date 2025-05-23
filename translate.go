@@ -55,6 +55,12 @@ func validateOptions(opts ...*TranslateOptions) (*TranslateOptions, error) {
 		if options.GoogleAPIType == "" {
 			options.GoogleAPIType = TypeHtml
 		}
+		if options.GoogleAPIKeyTranslateHtml == "" {
+			options.GoogleAPIKeyTranslateHtml = GOOGLE_API_KEY_TRANSLATE_HTML
+		}
+		if options.GoogleAPIKeyTranslatePa == "" {
+			options.GoogleAPIKeyTranslatePa = GOOGLE_API_KEY_TRANSLATE_PA
+		}
 		// Set default GoogleAPIType
 		validTypes := MpGoogleAPITypeSupport
 		if _, ok := validTypes[options.GoogleAPIType]; !ok {

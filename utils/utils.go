@@ -130,3 +130,27 @@ func getSeparator(separator []string) string {
 	}
 	return "\n"
 }
+
+type Translation struct {
+	Text string `json:"text"`
+	To   string `json:"to"`
+}
+
+type Entry struct {
+	Translations []Translation `json:"translations"`
+}
+
+func ExtractTranslatedTextFromMCSEdge(data []byte) ([]string, error) {
+	var entries []Entry
+	err := json.Unmarshal(data, &entries)
+	if err != nil {
+		return nil, err
+	}
+	var texts []string
+	for _, entry := range entries {
+		for _, t := range entry.Translations {
+			texts = append(texts, t.Text)
+		}
+	}
+	return texts, nil
+}

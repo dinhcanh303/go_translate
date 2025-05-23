@@ -39,18 +39,18 @@ func TestTranslateBatchText(t *testing.T) {
 			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói dịch vụ của chúng tôi.", "Hàn Quốc", "Tôi ổn", "Tôi nghĩ chúng ta cần phải chờ xem. Việc Fed tăng lãi suất có thể khiến thị trường biến động hơn 😑😑😑😑"},
 		},
 		"google case 2": {
-			opts:           &TranslateOptions{Provider: "google", GoogleAPIType: TypeClientGtx},
+			opts:           &TranslateOptions{Provider: "google", GoogleAPIType: TypePaGtx},
 			input:          []string{"Thank you for using our package."},
 			detectedLang:   "auto",
 			targetLang:     "vi",
 			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
 		},
 		"microsoft case 1": {
-			opts:           &TranslateOptions{Provider: "microsoft"},
-			input:          []string{"Thank you for using our package."},
+			opts:           &TranslateOptions{Provider: "microsoft", MicrosoftAPIType: "smart-link"},
+			input:          []string{"Thank you for using our package.", "I'm fine"},
 			detectedLang:   "en",
 			targetLang:     "vi",
-			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
+			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi.", "Tôi khỏe"},
 		},
 	}
 	ctx := context.Background()

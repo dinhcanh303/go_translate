@@ -14,6 +14,9 @@ type TranslateOptions struct {
 	// GoogleAPIType specifies the API type to use for Google Translate (e.g., "html" || "pa-gtx" || "client-gtx" || "client-dict").
 	GoogleAPIType GoogleAPIType
 
+	// MicrosoftAPIType specifies the API type to use for Microsoft Translate (e.g., "edge" || "smart-link" ).
+	MicrosoftAPIType MicrosoftAPIType
+
 	// UseRandomUserAgents enables random selection of User-Agent headers for each request. (Only Google)
 	UseRandomUserAgents bool
 
@@ -28,4 +31,10 @@ type TranslateOptions struct {
 
 	// CustomUserAgents provides a list of User-Agent strings to use (used if random is enabled).
 	CustomUserAgents []string
+
+	//API Key endpoint HTML
+	GoogleAPIKeyTranslateHtml string
+
+	//API Key endpoint PA
+	GoogleAPIKeyTranslatePa string
 }

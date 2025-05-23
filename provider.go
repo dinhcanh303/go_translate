@@ -10,4 +10,7 @@ const (
 
 	// ProviderMicrosoft represents the Microsoft Translator provider.
 	ProviderMicrosoft Provider = "microsoft"
+
+	//Mix both ProviderGoogle and ProviderMicrosoft
+	ProviderMix Provider = "mix"
 )

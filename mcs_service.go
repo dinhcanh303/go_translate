@@ -1,9 +1,8 @@
 package go_translate
 
 import (
-	"bytes"
 	"context"
-	"io"
+	"encoding/json"
 	"net/http"
 	"net/url"
 
@@ -33,6 +32,42 @@ func (m *MicrosoftTranslateService) TranslateText(ctx context.Context, texts []s
 // TranslateText performs the translation of the provided text into the target language using the Microsoft translation API.
 // It also optionally accepts a detected language code if you want to specify the source language explicitly.
 func (m *MicrosoftTranslateService) translate(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
+	if m.opts.MicrosoftAPIType == TypeSmartLink {
+		return m.callTranslateSmartLink(ctx, texts, target, detectedLangCode...)
+	}
+	return m.callTranslateEdge(ctx, texts, target)
+}
+
+// callTranslateEdge makes a POST request to the Edge API endpoint and returns the translated text.
+func (m *MicrosoftTranslateService) callTranslateEdge(ctx context.Context, texts []string, target string) ([]string, error) {
+	tokenBytes, err := utils.DoRequest(m.client, ctx, "GET", AuthEdgeUrl, nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var payload []map[string]string
+	for _, text := range texts {
+		payload = append(payload, map[string]string{
+			"text": text,
+		})
+	}
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl := MicrosoftUrls[TypeEdge] + target
+	header := map[string]string{
+		"Content-Type":  "application/json",
+		"Authorization": string(tokenBytes),
+	}
+	resq, err := utils.DoRequest(m.client, ctx, "POST", baseUrl, header, nil, jsonPayload)
+	if err != nil {
+		return nil, err
+	}
+	return utils.ExtractTranslatedTextFromMCSEdge(resq)
+}
+
+// callTranslateSmartLink makes a POST request to the Microsoft translate API endpoint of smart link and returns the translated text.
+func (m *MicrosoftTranslateService) callTranslateSmartLink(ctx context.Context, texts []string, target string, detectedLangCode ...string) ([]string, error) {
 	dir := "en/" + target
 	if len(detectedLangCode) > 0 {
 		dir = detectedLangCode[0] + "/" + target
@@ -43,21 +78,12 @@ func (m *MicrosoftTranslateService) translate(ctx context.Context, texts []strin
 		"dir":      {dir},
 		"provider": {"microsoft"},
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", MicrosoftServerUrl, bytes.NewBufferString(formData.Encode()))
+
+	resp, err := utils.DoRequest(m.client, ctx, "POST", MicrosoftServerUrl, map[string]string{"Content-Type": "application/x-www-form-urlencoded"}, formData, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := m.client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	text, err := utils.DecodeUnicode(string(bodyBytes))
+	text, err := utils.DecodeUnicode(string(resp))
 	if err != nil {
 		return nil, err
 	}
