@@ -65,7 +65,8 @@ go get github.com/dinhcanh303/go_translate@latest
 
 ```go
   type TranslateOptions struct {
-	  // Provider specifies which translation provider to use (e.g., Google or Microsoft).
+
+    // Provider specifies which translation provider to use (e.g., Google or Microsoft).
     Provider Provider
 
     //HTTPClient config
@@ -73,6 +74,9 @@ go get github.com/dinhcanh303/go_translate@latest
 
     // GoogleAPIType specifies the API type to use for Google Translate (e.g., "html" || "pa-gtx" || "client-gtx" || "client-dict").
     GoogleAPIType GoogleAPIType
+
+    // MicrosoftAPIType specifies the API type to use for Microsoft Translate (e.g., "edge" || "smart-link" ).
+    MicrosoftAPIType MicrosoftAPIType
 
     // UseRandomUserAgents enables random selection of User-Agent headers for each request. (Only Google)
     UseRandomUserAgents bool
@@ -88,7 +92,14 @@ go get github.com/dinhcanh303/go_translate@latest
 
     // CustomUserAgents provides a list of User-Agent strings to use (used if random is enabled).
     CustomUserAgents []string
+
+    //API Key endpoint HTML
+    GoogleAPIKeyTranslateHtml string
+
+    //API Key endpoint PA
+    GoogleAPIKeyTranslatePa string
   }
+
   const (
     // TypeHtml uses the standard "translate.google.com" HTML endpoint (unofficial, suitable for web-scraping style requests).
     TypeHtml GoogleAPIType = "html"
@@ -111,6 +122,15 @@ go get github.com/dinhcanh303/go_translate@latest
     // TypeMix of random and sequential (not implemented yet, placeholder for future use)
     TypeMix GoogleAPIType = "mix"
 )
+
+  const (
+    // TypeSmartLink uses the standard "https://webmail.smartlinkcorp.com" endpoint
+    TypeSmartLink MicrosoftAPIType = "smart-link"
+
+    // TypeEdge uses the standard microsoft translator endpoint
+    TypeEdge MicrosoftAPIType = "edge"
+  )
+
 
 ```
 ## Note

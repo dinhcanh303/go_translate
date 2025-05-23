@@ -58,6 +58,7 @@ func (m *MicrosoftTranslateService) callTranslateEdge(ctx context.Context, texts
 	header := map[string]string{
 		"Content-Type":  "application/json",
 		"Authorization": string(tokenBytes),
+		"User-Agent":    utils.GetConditionalRandomValue(DefaultUserAgents, m.opts.CustomUserAgents, m.opts.UseRandomUserAgents),
 	}
 	resq, err := utils.DoRequest(m.client, ctx, "POST", baseUrl, header, nil, jsonPayload)
 	if err != nil {
@@ -78,8 +79,11 @@ func (m *MicrosoftTranslateService) callTranslateSmartLink(ctx context.Context, 
 		"dir":      {dir},
 		"provider": {"microsoft"},
 	}
-
-	resp, err := utils.DoRequest(m.client, ctx, "POST", MicrosoftServerUrl, map[string]string{"Content-Type": "application/x-www-form-urlencoded"}, formData, nil)
+	header := map[string]string{
+		"Content-Type": "application/x-www-form-urlencoded",
+		"User-Agent":   utils.GetConditionalRandomValue(DefaultUserAgents, m.opts.CustomUserAgents, m.opts.UseRandomUserAgents),
+	}
+	resp, err := utils.DoRequest(m.client, ctx, "POST", MicrosoftServerUrl, header, formData, nil)
 	if err != nil {
 		return nil, err
 	}

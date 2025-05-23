@@ -46,7 +46,7 @@ func TestTranslateBatchText(t *testing.T) {
 			expectedOutput: []string{"Cảm ơn bạn đã sử dụng gói của chúng tôi."},
 		},
 		"microsoft case 1": {
-			opts:           &TranslateOptions{Provider: "microsoft", MicrosoftAPIType: "smart-link"},
+			opts:           &TranslateOptions{Provider: "microsoft", MicrosoftAPIType: "edge"},
 			input:          []string{"Thank you for using our package.", "I'm fine"},
 			detectedLang:   "en",
 			targetLang:     "vi",
